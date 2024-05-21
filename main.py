@@ -1,14 +1,14 @@
 import tkinter as tk
 import random
 
-WIDTH = 800
-HEIGHT = 600
-SPEED = 8
-GRAVITY = 1.5
-JUMP_SPEED = 15
-PIPE_WIDTH = 100
-PIPE_GAP = 200
-PIPE_SPACING = 300
+WIDTH = 800 
+HEIGHT = 600 
+SPEED = 8 
+GRAVITY = 1.2 
+JUMP_SPEED = 13 
+PIPE_WIDTH = 80 
+PIPE_GAP = 180 
+PIPE_SPACING = 280 
 
 class Bird:
     def __init__(self, canvas):
@@ -42,6 +42,12 @@ class Bird:
                     bird_position[3] > pipe_position[1] and bird_position[1] < pipe_position[3]):
                     return True
 
+        return False
+
+    def check_collision_with_ground(self):
+        bird_position = self.get_position()
+        if bird_position is not None and bird_position[3] >= HEIGHT:
+            return True
         return False
     
 
@@ -98,7 +104,7 @@ class gameUI:
         self.canvas.create_text(WIDTH / 2, HEIGHT / 2, text="GAME OVER", font=("Helvetica", 50, "bold"), fill="red")
         self.canvas.create_text(WIDTH / 2, HEIGHT / 2 + 50, text="Press SPACE to restart", font=("Helvetica", 15), fill="black")
         self.canvas.create_text(WIDTH / 2, HEIGHT / 2 + 80, text="Your score: " + str(self.score), font=("Helvetica", 20), fill="black")
-        self.canvas.create_text(WIDTH / 2, HEIGHT / 2 + 110, text="Mehmet Kahya - 230603035", font=("Helvetica", 15), fill="black")
+        self.canvas.create_text(WIDTH / 2, HEIGHT / 2 + 110, text="Mehmet Kahya - 230603035", font=("Helvetica", 10), fill="black")
         self.game_is_over = True
         if self.score > self.high_score:  # If the current score is higher than the high score
             self.high_score = self.score  # Update the high score
@@ -115,11 +121,10 @@ class gameUI:
             self.score = 0
             self.game_is_over = False
 
-            # Recreate the score display and high score display
+
             self.score_display = self.canvas.create_text(100, 50, text="Score: 0", font=("Helvetica", 16), fill="black")
             self.high_score_display = self.canvas.create_text(100, 80, text=f"High Score: {self.high_score}", font=("Helvetica bold", 16), fill="black")
 
-            # Start the game loop
             self.update_game()
             
     def update_game(self):
@@ -136,8 +141,12 @@ class gameUI:
             if self.bird.collides_with(pipe):
                 self.game_over()  # Display game over screen
                 return  # End the game
-        self.root.after(20, self.update_game)  # Schedule the next update
+            if self.bird.check_collision_with_ground():
+                self.game_over()  # Zemine değilse oyunu bitir
+                return
+        self.root.after(20, self.update_game)  
+
 
 
 if __name__ == "__main__":
-    game = gameUI()  # Create the gameUI object without passing any arguments      
+    game = gameUI()   
